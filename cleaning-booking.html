@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book Your House Cleaning</title>
+<style>
+  :root {
+    --green: #6b8dc4;
+    --green-light: #8aabd9;
+    --green-pale: #eef2fb;
+    --green-border: #c5d3ed;
+    --teal-dark: #3d5a99;
+    --accent: #f4a261;
+    --white: #ffffff;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-400: #9ca3af;
+    --gray-600: #4b5563;
+    --gray-700: #374151;
+    --gray-900: #111827;
+    --radius: 12px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
+    --shadow-card: 0 2px 8px rgba(107,141,196,0.1), 0 8px 32px rgba(0,0,0,0.07);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(160deg, #eef2fb 0%, #f2f5fd 40%, #f9fafb 100%);
+    min-height: 100vh;
+    color: var(--gray-900);
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* ── Header ── */
+  .page-header {
+    background: linear-gradient(135deg, #2d4580 0%, var(--teal-dark) 40%, var(--green) 80%, #a0bcdf 100%);
+    color: white;
+    text-align: center;
+    padding: 48px 20px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 20% 80%, rgba(255,255,255,0.06) 0%, transparent 50%),
+                      radial-gradient(circle at 80% 20%, rgba(255,255,255,0.08) 0%, transparent 50%);
+  }
+  .sparkles {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .sparkle {
+    position: absolute;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    animation: twinkle 3s ease-in-out infinite;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0; transform: scale(0.5); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+  .page-header h1 {
+    font-size: clamp(1.75rem, 5vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    position: relative;
+  }
+  .page-header p {
+    font-size: 1rem;
+    opacity: 0.88;
+    margin-top: 8px;
+    position: relative;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.18);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 999px;
+    padding: 5px 14px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    margin-top: 14px;
+    position: relative;
+  }
+
+  /* ── Layout ── */
+  .page-body {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 32px 16px 64px;
+  }
+
+  /* ── Sticky price bar ── */
+  .price-bar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: white;
+    border-bottom: 2px solid var(--green-border);
+    box-shadow: 0 2px 12px rgba(107,141,196,0.12);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .price-bar-label {
+    font-size: 0.85rem;
+    color: var(--gray-600);
+    font-weight: 500;
+  }
+  .price-bar-amount {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--green);
+    transition: color 0.2s;
+  }
+  .price-bar-amount.call-for-quote {
+    font-size: 1rem;
+    color: var(--accent);
+  }
+  .price-bar-cta {
+    font-size: 0.8rem;
+    color: var(--gray-400);
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* ── Cards / Sections ── */
+  .section-card {
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    padding: 28px 24px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(107,141,196,0.08);
+  }
+  .section-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--teal-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title .icon {
+    width: 24px; height: 24px;
+    background: var(--green-pale);
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+  }
+
+  /* ── Form fields ── */
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .field-row.single { grid-template-columns: 1fr; }
+  @media (max-width: 540px) {
+    .field-row { grid-template-columns: 1fr; }
+    .section-card { padding: 20px 16px; }
+  }
+
+  .field-group { display: flex; flex-direction: column; gap: 5px; }
+  .field-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray-700);
+  }
+  .field-group label .req { color: var(--green); margin-left: 2px; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="date"],
+  select,
+  textarea {
+    width: 100%;
+    padding: 10px 13px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    color: var(--gray-900);
+    background: var(--gray-50);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+    font-family: inherit;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(107,141,196,0.12);
+    background: white;
+  }
+  input.error, select.error { border-color: #ef4444; }
+  .field-error { font-size: 0.78rem; color: #ef4444; margin-top: 2px; display: none; }
+  .field-error.visible { display: block; }
+
+  textarea { resize: vertical; min-height: 90px; }
+
+  /* ── Size selectors (bedroom/bathroom) ── */
+  .size-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 2px;
+  }
+  .size-btn {
+    flex: 1 0 auto;
+    min-width: 56px;
+    padding: 9px 10px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    background: var(--gray-50);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gray-600);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .size-btn:hover { border-color: var(--green-light); color: var(--green); background: var(--green-pale); }
+  .size-btn.selected {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+    box-shadow: 0 2px 8px rgba(107,141,196,0.3);
+  }
+  .size-btn.call {
+    background: #fff7ed;
+    border-color: #fed7aa;
+    color: var(--accent);
+    font-size: 0.78rem;
+    font-weight: 700;
+  }
+  .size-btn.call.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  /* ── Radio cards (cleaning type, frequency) ── */
+  .radio-cards { display: flex; flex-direction: column; gap: 10px; }
+  .radio-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--gray-50);
+    position: relative;
+  }
+  .radio-card:hover { border-color: var(--green-light); background: var(--green-pale); }
+  .radio-card.selected {
+    border-color: var(--green);
+    background: var(--green-pale);
+    box-shadow: 0 0 0 3px rgba(107,141,196,0.1);
+  }
+  .radio-card input[type="radio"] { display: none; }
+  .radio-dot {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 2px solid var(--gray-300, #d1d5db);
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .radio-card.selected .radio-dot {
+    border-color: var(--green);
+    background: var(--green);
+  }
+  .radio-card.selected .radio-dot::after {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: white;
+  }
+  .radio-card-content { flex: 1; }
+  .radio-card-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--gray-900);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .radio-card-desc {
+    font-size: 0.82rem;
+    color: var(--gray-600);
+    margin-top: 3px;
+    line-height: 1.4;
+  }
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+  .badge-save { background: #dcfce7; color: #15803d; }
+  .badge-deep { background: #fef3c7; color: #92400e; }
+  .badge-move { background: #ede9fe; color: #5b21b6; }
+  .radio-card-price {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--green);
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+
+  /* ── Frequency section ── */
+  #frequency-section {
+    transition: opacity 0.2s;
+  }
+  .frequency-note {
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    border-radius: var(--radius-sm);
+    padding: 10px 14px;
+    font-size: 0.83rem;
+    color: #92400e;
+    display: none;
+    margin-bottom: 12px;
+  }
+  .frequency-note.visible { display: block; }
+
+  /* ── Toggle (home condition) ── */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    background: var(--gray-50);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .toggle-row:has(.toggle-input:checked) {
+    border-color: var(--accent);
+    background: #fff7ed;
+  }
+  .toggle-switch {
+    position: relative;
+    width: 44px; height: 24px;
+    flex-shrink: 0;
+  }
+  .toggle-input { position: absolute; opacity: 0; width: 0; height: 0; }
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    background: var(--gray-200);
+    border-radius: 999px;
+    transition: background 0.2s;
+  }
+  .toggle-input:checked ~ .toggle-track { background: var(--accent); }
+  .toggle-thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 18px; height: 18px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+  }
+  .toggle-input:checked ~ .toggle-track ~ .toggle-thumb { transform: translateX(20px); }
+  .toggle-label-text { flex: 1; }
+  .toggle-label-title { font-weight: 600; font-size: 0.95rem; }
+  .toggle-label-sub { font-size: 0.8rem; color: var(--gray-600); margin-top: 1px; }
+  .toggle-price { font-weight: 700; color: var(--accent); font-size: 0.9rem; }
+
+  /* ── Checkboxes (add-ons) ── */
+  .addon-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+  }
+  @media (max-width: 500px) { .addon-grid { grid-template-columns: 1fr; } }
+  .addon-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 13px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--gray-50);
+    user-select: none;
+  }
+  .addon-item:hover { border-color: var(--green-light); background: var(--green-pale); }
+  .addon-item.checked { border-color: var(--green); background: var(--green-pale); }
+  .addon-checkbox {
+    width: 18px; height: 18px;
+    border: 2px solid var(--gray-300, #d1d5db);
+    border-radius: 5px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    background: white;
+  }
+  .addon-item.checked .addon-checkbox {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .addon-item.checked .addon-checkbox::after {
+    content: '';
+    width: 10px; height: 7px;
+    border-bottom: 2px solid white;
+    border-left: 2px solid white;
+    transform: rotate(-45deg) translateY(-1px);
+  }
+  .addon-checkbox-input { display: none; }
+  .addon-name { font-size: 0.87rem; font-weight: 600; color: var(--gray-700); flex: 1; }
+  .addon-price { font-size: 0.85rem; font-weight: 700; color: var(--green); }
+
+  /* ── Pill selectors (pets, arrival window, referral) ── */
+  .pill-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .pill-input { display: none; }
+  .pill-label {
+    padding: 8px 16px;
+    border: 1.5px solid var(--gray-200);
+    border-radius: 999px;
+    font-size: 0.87rem;
+    font-weight: 500;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--gray-50);
+    user-select: none;
+  }
+  .pill-label:hover { border-color: var(--green-light); color: var(--green); background: var(--green-pale); }
+  .pill-input:checked + .pill-label {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+    box-shadow: 0 2px 6px rgba(107,141,196,0.25);
+  }
+
+  /* ── Price breakdown ── */
+  .price-breakdown-card {
+    background: var(--green-pale);
+    border: 1.5px solid var(--green-border);
+    border-radius: var(--radius);
+    padding: 22px 22px 20px;
+    margin-bottom: 20px;
+  }
+  .breakdown-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--teal-dark);
+    margin-bottom: 14px;
+  }
+  .breakdown-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.9rem;
+    padding: 4px 0;
+    color: var(--gray-700);
+  }
+  .breakdown-row.indent { padding-left: 12px; font-size: 0.85rem; color: var(--gray-600); }
+  .breakdown-row.discount { color: #15803d; }
+  .breakdown-row.addon { color: var(--gray-600); font-size: 0.85rem; }
+  .breakdown-row .amount { font-weight: 600; white-space: nowrap; }
+  .breakdown-divider {
+    border: none;
+    border-top: 1px solid var(--green-border);
+    margin: 10px 0;
+  }
+  .breakdown-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--teal-dark);
+    padding-top: 4px;
+  }
+  .breakdown-total .amount { color: var(--green); font-size: 1.5rem; }
+  .breakdown-callquote {
+    text-align: center;
+    padding: 16px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: #fff7ed;
+    border: 1.5px solid #fed7aa;
+    border-radius: var(--radius-sm);
+  }
+  .breakdown-callquote p { font-size: 0.83rem; font-weight: 400; color: var(--gray-600); margin-top: 4px; }
+
+  .price-note {
+    font-size: 0.8rem;
+    color: var(--gray-600);
+    line-height: 1.5;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--green-border);
+  }
+
+  /* ── Submit button ── */
+  .submit-btn {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--teal-dark), var(--green));
+    color: white;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(107,141,196,0.35);
+    letter-spacing: 0.02em;
+  }
+  .submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 22px rgba(107,141,196,0.45);
+  }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* ── Success message ── */
+  #success-message {
+    display: none;
+    text-align: center;
+    padding: 48px 24px;
+    background: white;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+  }
+  #success-message.visible { display: block; }
+  .success-icon {
+    width: 72px; height: 72px;
+    background: var(--green-pale);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 2rem;
+  }
+  #success-message h2 { color: var(--teal-dark); font-size: 1.5rem; margin-bottom: 10px; }
+  #success-message p { color: var(--gray-600); font-size: 0.95rem; }
+
+  /* ── Misc ── */
+  .sub-label {
+    font-size: 0.78rem;
+    color: var(--gray-400);
+    font-weight: 400;
+    display: block;
+    margin-top: 1px;
+  }
+  .field-hint {
+    font-size: 0.78rem;
+    color: var(--gray-400);
+    margin-top: 3px;
+  }
+  #form-container { transition: opacity 0.3s; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     PAGE HEADER
+══════════════════════════════════════════ -->
+<div class="page-header">
+  <div class="sparkles" id="sparkles"></div>
+  <h1>✨ Book Your Cleaning</h1>
+  <p>Instant pricing — no calls, no surprises</p>
+  <div class="header-badge">
+    <span>🕐</span> We confirm within a few hours
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     STICKY PRICE BAR
+══════════════════════════════════════════ -->
+<div class="price-bar">
+  <div>
+    <div class="price-bar-label">Estimated Total</div>
+    <div class="price-bar-amount" id="price-bar-display">$100</div>
+  </div>
+  <div class="price-bar-cta">Scroll down to<br>complete booking</div>
+</div>
+
+<div class="page-body">
+<div id="form-container">
+<form id="booking-form" novalidate>
+
+  <!-- hidden Web2Forms key field -->
+  <!-- REPLACE WITH CLIENT WEB2FORMS KEY below -->
+  <input type="hidden" name="access_key" value="REPLACE_WITH_CLIENT_WEB2FORMS_KEY">
+  <input type="hidden" name="subject" value="New Cleaning Booking Request">
+  <input type="hidden" name="from_name" value="Cleaning Booking Form">
+  <!-- Honeypot -->
+  <input type="checkbox" name="botcheck" style="display:none;">
+
+  <!-- ── SECTION 1: Contact Info ── -->
+  <div class="section-card">
+    <div class="section-title"><span class="icon">👤</span> Your Information</div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label for="full-name">Full Name <span class="req">*</span></label>
+        <input type="text" id="full-name" name="full_name" placeholder="Jane Smith" autocomplete="name" required>
+        <div class="field-error" id="err-name">Please enter your name.</div>
+      </div>
+      <div class="field-group">
+        <label for="phone">Phone Number <span class="req">*</span></label>
+        <input type="tel" id="phone" name="phone" placeholder="(555) 000-0000" autocomplete="tel" required>
+        <div class="field-error" id="err-phone">Please enter a phone number.</div>
+      </div>
+    </div>
+    <div class="field-row single">
+      <div class="field-group">
+        <label for="email">Email Address <span class="req">*</span></label>
+        <input type="email" id="email" name="email" placeholder="jane@example.com" autocomplete="email" required>
+        <div class="field-error" id="err-email">Please enter a valid email.</div>
+      </div>
+    </div>
+    <div class="field-row single">
+      <div class="field-group">
+        <label for="address">Service Address <span class="req">*</span></label>
+        <input type="text" id="address" name="service_address" placeholder="123 Maple St, City, State 00000" autocomplete="street-address" required>
+        <div class="field-error" id="err-address">Please enter your service address.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: Home Size ── -->
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🏠</span> Home Size</div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label>Bedrooms <span class="req">*</span></label>
+        <div class="size-selector" id="bedroom-selector" role="group" aria-label="Number of bedrooms">
+          <div class="size-btn" data-group="bedroom" data-value="1">1</div>
+          <div class="size-btn" data-group="bedroom" data-value="2">2</div>
+          <div class="size-btn" data-group="bedroom" data-value="3">3</div>
+          <div class="size-btn" data-group="bedroom" data-value="4">4</div>
+          <div class="size-btn call" data-group="bedroom" data-value="5plus">5+</div>
+        </div>
+        <div class="field-error" id="err-bedroom">Please select number of bedrooms.</div>
+        <input type="hidden" name="bedrooms" id="bedroom-value">
+      </div>
+      <div class="field-group">
+        <label>Bathrooms <span class="req">*</span></label>
+        <div class="size-selector" id="bathroom-selector" role="group" aria-label="Number of bathrooms">
+          <div class="size-btn" data-group="bathroom" data-value="1">1</div>
+          <div class="size-btn" data-group="bathroom" data-value="2">2</div>
+          <div class="size-btn" data-group="bathroom" data-value="3">3</div>
+          <div class="size-btn" data-group="bathroom" data-value="4plus">4+</div>
+        </div>
+        <div class="field-error" id="err-bathroom">Please select number of bathrooms.</div>
+        <input type="hidden" name="bathrooms" id="bathroom-value">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3: Cleaning Type ── -->
+  <div class="section-card">
+    <div class="section-title"><span class="icon">🧹</span> Cleaning Type</div>
+    <div class="radio-cards" id="cleaning-type-group">
+
+      <label class="radio-card" id="card-standard">
+        <input type="radio" name="cleaning_type" value="standard" id="type-standard">
+        <div class="radio-dot"></div>
+        <div class="radio-card-content">
+          <div class="radio-card-title">Standard Clean</div>
+          <div class="radio-card-desc">Dusting, vacuuming, mopping, surface wipe-downs, bathrooms &amp; kitchen. Perfect for regular maintenance.</div>
+        </div>
+        <div class="radio-card-price">1×</div>
+      </label>
+
+      <label class="radio-card" id="card-deep">
+        <input type="radio" name="cleaning_type" value="deep" id="type-deep">
+        <div class="radio-dot"></div>
+        <div class="radio-card-content">
+          <div class="radio-card-title">Deep Clean <span class="badge badge-deep">1.6×</span></div>
+          <div class="radio-card-desc"><em>First visit or hasn't been cleaned in 2+ months.</em> Everything in Standard plus baseboards, window sills, inside cabinets &amp; detailed scrubbing.</div>
+        </div>
+      </label>
+
+      <label class="radio-card" id="card-moveinout">
+        <input type="radio" name="cleaning_type" value="moveinout" id="type-moveinout">
+        <div class="radio-dot"></div>
+        <div class="radio-card-content">
+          <div class="radio-card-title">Move In / Move Out <span class="badge badge-move">1.8×</span></div>
+          <div class="radio-card-desc">Top-to-bottom clean: inside all appliances, inside every cabinet, walls spot-cleaned. Best for empty homes.</div>
+        </div>
+      </label>
+
+    </div>
+    <div class="field-error" id="err-cleaning-type" style="margin-top:8px;">Please select a cleaning type.</div>
+    <input type="hidden" name="cleaning_type_label" id="cleaning-type-label-hidden">
+  </div>
+
+  <!-- ── SECTION 4: Frequency ── -->
+  <div class="section-card" id="frequency-section">
+    <div class="section-title"><span class="icon">📅</span> Cleaning Frequency</div>
+    <div class="frequency-note" id="frequency-locked-note">
+      Recurring discounts apply to Standard Cleans only. This service is priced as one-time.
+    </div>
+    <div class="radio-cards" id="frequency-group">
+
+      <label class="radio-card" id="card-onetime">
+        <input type="radio" name="frequency" value="onetime" id="freq-onetime">
+        <div class="radio-dot"></div>
+        <div class="radio-card-content">
+          <div class="radio-card-title">One-Time</div>
+          <div class="radio-card-desc">A single visit, no commitment.</div>
+        </div>
+      </label>
+
+      <label class="radio-card" id="card-biweekly">
+        <input type="radio" name="frequency" value="biweekly" id="freq-biweekly">
+        <div class="radio-dot"></div>
+        <div class="radio-card-content">
+          <div class="radio-card-title">Every 2 Weeks <span class="badge badge-save">Save 15%</span></div>
+          <div class="radio-card-desc">Stay consistently clean — popular choice.</div>
+        </div>
+      </label>
+
+      <label class="radio-card" id="card-weekly">
+        <input type="radio" name="frequency" value="weekly" id="freq-weekly">
+        <div class="radio-dot"></div>
+        <div class="radio-card-content">
+          <div class="radio-card-title">Weekly <span class="badge badge-save">Save 25%</span></div>
+          <div class="radio-card-desc">Always guest-ready. Best value for busy households.</div>
+        </div>
+      </label>
+
+    </div>
+    <div class="field-error" id="err-frequency" style="margin-top:8px;">Please select a frequency.</div>
+    <input type="hidden" name="frequency_label" id="frequency-label-hidden">
+  </div>
+
+  <!-- ── SECTION 5: Home Condition ── -->
+  <div class="section-card" id="condition-section">
+    <div class="section-title"><span class="icon">🔍</span> Home Condition</div>
+
+    <label class="toggle-row" for="extra-dirty-toggle">
+      <div class="toggle-switch">
+        <input type="checkbox" class="toggle-input" id="extra-dirty-toggle" name="extra_dirty">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </div>
+      <div class="toggle-label-text">
+        <div class="toggle-label-title">Extra Dirty / Heavy Buildup</div>
+        <div class="toggle-label-sub">Pet hair, grease buildup, heavy dust accumulation, etc.</div>
+      </div>
+      <div class="toggle-price">+$50</div>
+    </label>
+    <div class="field-hint" id="dirty-note" style="display:none; margin-top:8px; color:#92400e; background:#fff7ed; padding:8px 12px; border-radius:6px; font-size:0.8rem;">
+      Our team may contact you to adjust pricing if the condition requires significantly more time.
+    </div>
+    <input type="hidden" name="condition" id="condition-value" value="Normal">
+  </div>
+
+  <!-- ── SECTION 6: Add-Ons ── -->
+  <div class="section-card" id="addons-section">
+    <div class="section-title"><span class="icon">✅</span> Optional Add-Ons</div>
+    <div class="addon-grid" id="addon-grid">
+      <!-- rendered by JS from CONFIG -->
+    </div>
+  </div>
+
+  <!-- ── SECTION 7: Scheduling ── -->
+  <div class="section-card" id="scheduling-section">
+    <div class="section-title"><span class="icon">🗓️</span> Scheduling</div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label for="pref-date">Preferred Date <span class="req">*</span></label>
+        <input type="date" id="pref-date" name="preferred_date" required>
+        <div class="field-error" id="err-date">Please select a preferred date.</div>
+      </div>
+      <div class="field-group">
+        <label>Preferred Arrival Window <span class="req">*</span></label>
+        <div class="pill-group" style="margin-top:4px;">
+          <input type="radio" name="arrival_window" value="Morning (8am–11am)" id="win-morning" class="pill-input" required>
+          <label for="win-morning" class="pill-label">Morning<br><span style="font-size:0.75em;opacity:0.75">8am–11am</span></label>
+          <input type="radio" name="arrival_window" value="Midday (11am–2pm)" id="win-midday" class="pill-input">
+          <label for="win-midday" class="pill-label">Midday<br><span style="font-size:0.75em;opacity:0.75">11am–2pm</span></label>
+          <input type="radio" name="arrival_window" value="Afternoon (2pm–5pm)" id="win-afternoon" class="pill-input">
+          <label for="win-afternoon" class="pill-label">Afternoon<br><span style="font-size:0.75em;opacity:0.75">2pm–5pm</span></label>
+        </div>
+        <div class="field-error" id="err-window">Please select an arrival window.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 8: Additional Details ── -->
+  <div class="section-card" id="details-section">
+    <div class="section-title"><span class="icon">📋</span> A Few More Details</div>
+
+    <div class="field-row">
+      <div class="field-group">
+        <label>Do you have pets?</label>
+        <div class="pill-group" style="margin-top:4px;">
+          <input type="radio" name="has_pets" value="Yes" id="pets-yes" class="pill-input">
+          <label for="pets-yes" class="pill-label">Yes, we do 🐾</label>
+          <input type="radio" name="has_pets" value="No" id="pets-no" class="pill-input">
+          <label for="pets-no" class="pill-label">No pets</label>
+        </div>
+      </div>
+      <div class="field-group">
+        <label for="referral">How did you hear about us?</label>
+        <select id="referral" name="referral_source">
+          <option value="">— Select —</option>
+          <option>Google</option>
+          <option>Nextdoor</option>
+          <option>Facebook</option>
+          <option>Referral</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="field-row single">
+      <div class="field-group">
+        <label for="gate-code">Gate Code / Access Notes <span class="sub-label">Optional</span></label>
+        <input type="text" id="gate-code" name="gate_code" placeholder="e.g. Gate code #1234, key under mat">
+      </div>
+    </div>
+    <div class="field-row single">
+      <div class="field-group">
+        <label for="notes">Additional Notes <span class="sub-label">Optional — anything we should know</span></label>
+        <textarea id="notes" name="additional_notes" placeholder="Focus areas, special requests, allergies to cleaning products…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PRICE BREAKDOWN ── -->
+  <div class="price-breakdown-card" id="price-breakdown-card">
+    <div class="breakdown-title">📊 Your Price Breakdown</div>
+
+    <div id="call-for-quote-block" style="display:none;">
+      <div class="breakdown-callquote">
+        📞 Call for a Custom Quote
+        <p>Homes with 5+ bedrooms are priced individually. Give us a call and we'll get you a number right away!</p>
+      </div>
+    </div>
+
+    <div id="price-detail-block">
+      <div class="breakdown-row">
+        <span>Base price</span>
+        <span class="amount" id="bd-base">$100</span>
+      </div>
+      <div class="breakdown-row indent" id="bd-bedroom-row" style="display:none;">
+        <span id="bd-bedroom-label">+ Bedrooms</span>
+        <span class="amount" id="bd-bedroom-amt"></span>
+      </div>
+      <div class="breakdown-row indent" id="bd-bathroom-row" style="display:none;">
+        <span id="bd-bathroom-label">+ Bathrooms</span>
+        <span class="amount" id="bd-bathroom-amt"></span>
+      </div>
+      <div class="breakdown-row" id="bd-subbase-row" style="display:none;">
+        <span>Subtotal (before type)</span>
+        <span class="amount" id="bd-subbase"></span>
+      </div>
+      <div class="breakdown-row" id="bd-type-row" style="display:none;">
+        <span id="bd-type-label">Cleaning type</span>
+        <span class="amount" id="bd-type-amt"></span>
+      </div>
+      <div class="breakdown-row discount" id="bd-freq-row" style="display:none;">
+        <span id="bd-freq-label">Frequency discount</span>
+        <span class="amount" id="bd-freq-amt"></span>
+      </div>
+      <div class="breakdown-row" id="bd-condition-row" style="display:none;">
+        <span>Extra dirty surcharge</span>
+        <span class="amount" id="bd-condition-amt">+$50</span>
+      </div>
+      <div id="bd-addons-block"></div>
+      <hr class="breakdown-divider" id="bd-divider" style="display:none;">
+      <div class="breakdown-total" id="bd-total-row" style="display:none;">
+        <span>Total</span>
+        <span class="amount" id="bd-total">—</span>
+      </div>
+    </div>
+
+    <div class="price-note">
+      We'll confirm your booking within a few hours. First-time deep clean pricing may be adjusted if the home requires significantly more time — we'll always call before making any changes.
+    </div>
+  </div>
+
+  <!-- ── SUBMIT ── -->
+  <div id="submit-section">
+    <button type="submit" class="submit-btn" id="submit-btn">
+      ✨ Request My Cleaning &rarr;
+    </button>
+    <div style="text-align:center; margin-top:12px; font-size:0.78rem; color:var(--gray-400);">
+      No payment required now &nbsp;·&nbsp; We'll confirm details before your appointment
+    </div>
+  </div>
+
+</form>
+</div>
+
+<!-- ── SUCCESS ── -->
+<div id="success-message">
+  <div class="success-icon">✨</div>
+  <h2>Booking Request Received!</h2>
+  <p>Thank you! We'll review your request and confirm within a few hours.<br>Check your email for a confirmation shortly.</p>
+</div>
+
+</div><!-- /page-body -->
+
+<script>
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  CONFIGURATION — Edit prices and labels here without touching   ║
+// ║  any other code. Hand this section to a non-developer safely.   ║
+// ╚══════════════════════════════════════════════════════════════════╝
+const CONFIG = {
+
+  // ── BASE PRICE ──────────────────────────────────────────────────
+  // Flat starting price before any size, type, or frequency factors.
+  basePrice: 100,
+
+  // ── BEDROOM PRICING ─────────────────────────────────────────────
+  // value:  the selection id (don't change the "5plus" key)
+  // price:  flat amount ADDED to the base
+  // label:  how it shows in the breakdown
+  // callForQuote: true means disable pricing and show "Call for quote"
+  bedrooms: [
+    { value: "1",     label: "1 bedroom",   price: 0  },
+    { value: "2",     label: "2 bedrooms",  price: 20 },
+    { value: "3",     label: "3 bedrooms",  price: 40 },
+    { value: "4",     label: "4 bedrooms",  price: 60 },
+    { value: "5plus", label: "5+ bedrooms", price: 0, callForQuote: true },
+  ],
+
+  // ── BATHROOM PRICING ────────────────────────────────────────────
+  bathrooms: [
+    { value: "1",    label: "1 bathroom",  price: 0  },
+    { value: "2",    label: "2 bathrooms", price: 25 },
+    { value: "3",    label: "3 bathrooms", price: 50 },
+    { value: "4plus",label: "4+ bathrooms",price: 75 },
+  ],
+
+  // ── CLEANING TYPES ──────────────────────────────────────────────
+  // multiplier: applied to (basePrice + bedroom + bathroom)
+  // lockFrequency: true = hide frequency radio options, force one-time
+  cleaningTypes: {
+    standard:   { label: "Standard Clean",    multiplier: 1.0, lockFrequency: false },
+    deep:       { label: "Deep Clean",         multiplier: 1.6, lockFrequency: true  },
+    moveinout:  { label: "Move In / Move Out", multiplier: 1.8, lockFrequency: true  },
+  },
+
+  // ── FREQUENCY DISCOUNTS ─────────────────────────────────────────
+  // multiplier: applied after the cleaning type multiplier
+  frequencies: {
+    onetime:   { label: "One-Time",      multiplier: 1.0  },
+    biweekly:  { label: "Every 2 Weeks", multiplier: 0.85 },
+    weekly:    { label: "Weekly",        multiplier: 0.75 },
+  },
+
+  // ── HOME CONDITION SURCHARGE ────────────────────────────────────
+  extraDirtySurcharge: 50,
+
+  // ── ADD-ONS ─────────────────────────────────────────────────────
+  // id:    internal key (lowercase, no spaces)
+  // label: shown in the form checkbox
+  // price: flat amount added AFTER all multipliers
+  addons: [
+    { id: "oven",    label: "Inside Oven Cleaning",                 price: 35 },
+    { id: "fridge",  label: "Inside Refrigerator Cleaning",         price: 35 },
+    { id: "windows", label: "Interior Window Cleaning",             price: 45 },
+    { id: "laundry", label: "Laundry (wash + dry + fold, 2 loads)", price: 40 },
+    { id: "walls",   label: "Wall Spot Cleaning",                   price: 30 },
+    { id: "garage",  label: "Garage Sweep",                         price: 35 },
+  ],
+
+  // ── WEB2FORMS KEY ───────────────────────────────────────────────
+  // REPLACE WITH CLIENT WEB2FORMS KEY
+  // Update the hidden input near the top of the HTML — not here.
+};
+// ╔══════════════════════════════════════════════════════════════════╗
+// ║  END CONFIGURATION — Do not edit below this line               ║
+// ╚══════════════════════════════════════════════════════════════════╝
+
+
+// ── State ──────────────────────────────────────────────────────────
+const state = {
+  bedroom: null,
+  bathroom: null,
+  cleaningType: null,
+  frequency: null,
+  extraDirty: false,
+  addons: new Set(),
+};
+
+// ── Sparkles decoration ────────────────────────────────────────────
+(function() {
+  const container = document.getElementById('sparkles');
+  for (let i = 0; i < 18; i++) {
+    const s = document.createElement('div');
+    s.className = 'sparkle';
+    s.style.cssText = `
+      left: ${Math.random() * 100}%;
+      top: ${Math.random() * 100}%;
+      width: ${3 + Math.random() * 5}px;
+      height: ${3 + Math.random() * 5}px;
+      animation-delay: ${Math.random() * 3}s;
+      animation-duration: ${2 + Math.random() * 2}s;
+    `;
+    container.appendChild(s);
+  }
+})();
+
+// ── Build add-on checkboxes from CONFIG ────────────────────────────
+(function buildAddons() {
+  const grid = document.getElementById('addon-grid');
+  CONFIG.addons.forEach(addon => {
+    const item = document.createElement('label');
+    item.className = 'addon-item';
+    item.setAttribute('for', 'addon-' + addon.id);
+    item.innerHTML = `
+      <input type="checkbox" class="addon-checkbox-input" id="addon-${addon.id}" name="addon_${addon.id}" value="${addon.price}">
+      <div class="addon-checkbox"></div>
+      <span class="addon-name">${addon.label}</span>
+      <span class="addon-price">+$${addon.price}</span>
+    `;
+    const cb = item.querySelector('input');
+    cb.addEventListener('change', () => {
+      if (cb.checked) {
+        state.addons.add(addon.id);
+        item.classList.add('checked');
+      } else {
+        state.addons.delete(addon.id);
+        item.classList.remove('checked');
+      }
+      recalculate();
+    });
+    grid.appendChild(item);
+  });
+})();
+
+// ── Size button clicks ──────────────────────────────────────────────
+document.querySelectorAll('.size-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const group = btn.dataset.group;
+    document.querySelectorAll(`.size-btn[data-group="${group}"]`).forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    state[group] = btn.dataset.value;
+    document.getElementById(`${group}-value`).value = btn.dataset.value;
+    revealSections();
+    recalculate();
+  });
+});
+
+// ── Cleaning type radio ─────────────────────────────────────────────
+document.querySelectorAll('input[name="cleaning_type"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    document.querySelectorAll('.radio-card').forEach(c => {
+      if (c.querySelector('input[name="cleaning_type"]')) c.classList.remove('selected');
+    });
+    radio.closest('.radio-card').classList.add('selected');
+    state.cleaningType = radio.value;
+    document.getElementById('cleaning-type-label-hidden').value = CONFIG.cleaningTypes[radio.value].label;
+    handleFrequencyLock();
+    recalculate();
+  });
+});
+
+// ── Frequency radio ─────────────────────────────────────────────────
+document.querySelectorAll('input[name="frequency"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    document.querySelectorAll('.radio-card').forEach(c => {
+      if (c.querySelector('input[name="frequency"]')) c.classList.remove('selected');
+    });
+    radio.closest('.radio-card').classList.add('selected');
+    state.frequency = radio.value;
+    document.getElementById('frequency-label-hidden').value = CONFIG.frequencies[radio.value].label;
+    recalculate();
+  });
+});
+
+// ── Home condition toggle ───────────────────────────────────────────
+document.getElementById('extra-dirty-toggle').addEventListener('change', function() {
+  state.extraDirty = this.checked;
+  document.getElementById('condition-value').value = this.checked ? 'Extra dirty / heavy buildup' : 'Normal';
+  document.getElementById('dirty-note').style.display = this.checked ? 'block' : 'none';
+  recalculate();
+});
+
+// ── Lock frequency options for deep / move-in-out ──────────────────
+function handleFrequencyLock() {
+  if (!state.cleaningType) return;
+  const typeConfig = CONFIG.cleaningTypes[state.cleaningType];
+  const lockedNote = document.getElementById('frequency-locked-note');
+  const freqGroup  = document.getElementById('frequency-group');
+
+  if (typeConfig.lockFrequency) {
+    lockedNote.classList.add('visible');
+    freqGroup.style.opacity = '0.35';
+    freqGroup.style.pointerEvents = 'none';
+    // Auto-select one-time
+    document.getElementById('freq-onetime').checked = true;
+    document.getElementById('card-onetime').classList.add('selected');
+    document.getElementById('card-biweekly').classList.remove('selected');
+    document.getElementById('card-weekly').classList.remove('selected');
+    state.frequency = 'onetime';
+    document.getElementById('frequency-label-hidden').value = 'One-Time';
+  } else {
+    lockedNote.classList.remove('visible');
+    freqGroup.style.opacity = '';
+    freqGroup.style.pointerEvents = '';
+  }
+}
+
+// ── Hide pricing sections only when 5+ bedrooms selected ───────────
+function revealSections() {
+  const callForQuote = state.bedroom === '5plus';
+  ['frequency-section', 'condition-section', 'addons-section'].forEach(id => {
+    document.getElementById(id).style.display = callForQuote ? 'none' : '';
+  });
+}
+
+function show(id, visible) {
+  document.getElementById(id).style.display = visible ? '' : 'none';
+}
+
+// ── Price calculation ───────────────────────────────────────────────
+function recalculate() {
+  const callForQuote = state.bedroom === '5plus';
+  const priceBarEl  = document.getElementById('price-bar-display');
+  const callBlock   = document.getElementById('call-for-quote-block');
+  const detailBlock = document.getElementById('price-detail-block');
+
+  if (callForQuote) {
+    priceBarEl.textContent = 'Call for Quote';
+    priceBarEl.classList.add('call-for-quote');
+    callBlock.style.display = '';
+    detailBlock.style.display = 'none';
+    return;
+  }
+
+  priceBarEl.classList.remove('call-for-quote');
+  callBlock.style.display = 'none';
+  detailBlock.style.display = '';
+
+  const basePrice = CONFIG.basePrice;
+
+  let bedroomAdd = 0, bedroomLabel = '';
+  if (state.bedroom) {
+    const br = CONFIG.bedrooms.find(b => b.value === state.bedroom);
+    if (br) { bedroomAdd = br.price; bedroomLabel = br.label; }
+  }
+
+  let bathroomAdd = 0, bathroomLabel = '';
+  if (state.bathroom) {
+    const ba = CONFIG.bathrooms.find(b => b.value === state.bathroom);
+    if (ba) { bathroomAdd = ba.price; bathroomLabel = ba.label; }
+  }
+
+  const subBase = basePrice + bedroomAdd + bathroomAdd;
+
+  let typeMultiplier = 1.0, typeLabel = '';
+  if (state.cleaningType) {
+    const tc = CONFIG.cleaningTypes[state.cleaningType];
+    typeMultiplier = tc.multiplier;
+    typeLabel = tc.label;
+  }
+  const afterType = subBase * typeMultiplier;
+
+  let freqMultiplier = 1.0, freqLabel = '';
+  if (state.frequency) {
+    const fc = CONFIG.frequencies[state.frequency];
+    freqMultiplier = fc.multiplier;
+    freqLabel = fc.label;
+  }
+  const afterFreq = afterType * freqMultiplier;
+
+  const conditionAdd = state.extraDirty ? CONFIG.extraDirtySurcharge : 0;
+
+  let addonTotal = 0;
+  const addonLines = [];
+  CONFIG.addons.forEach(addon => {
+    if (state.addons.has(addon.id)) {
+      addonTotal += addon.price;
+      addonLines.push({ label: addon.label, price: addon.price });
+    }
+  });
+
+  const total = afterFreq + conditionAdd + addonTotal;
+
+  // Breakdown rows
+  setEl('bd-base', '$' + basePrice);
+
+  showRow('bd-bedroom-row', bedroomAdd > 0);
+  if (bedroomAdd > 0) {
+    setEl('bd-bedroom-label', '+ ' + bedroomLabel);
+    setEl('bd-bedroom-amt', '+$' + bedroomAdd);
+  }
+
+  showRow('bd-bathroom-row', bathroomAdd > 0);
+  if (bathroomAdd > 0) {
+    setEl('bd-bathroom-label', '+ ' + bathroomLabel);
+    setEl('bd-bathroom-amt', '+$' + bathroomAdd);
+  }
+
+  const showSubBase = (bedroomAdd > 0 || bathroomAdd > 0) && state.cleaningType;
+  showRow('bd-subbase-row', showSubBase);
+  if (showSubBase) setEl('bd-subbase', '$' + subBase);
+
+  showRow('bd-type-row', !!state.cleaningType);
+  if (state.cleaningType) {
+    if (typeMultiplier === 1.0) {
+      setEl('bd-type-label', typeLabel);
+      setEl('bd-type-amt', '×1.0 (no change)');
+    } else {
+      const typeEffect = afterType - subBase;
+      setEl('bd-type-label', typeLabel + ' (' + typeMultiplier + '×)');
+      setEl('bd-type-amt', '+$' + typeEffect.toFixed(0));
+    }
+  }
+
+  const showFreq = state.frequency && freqMultiplier < 1.0;
+  showRow('bd-freq-row', showFreq);
+  if (showFreq) {
+    const saving = afterType - afterFreq;
+    setEl('bd-freq-label', freqLabel + ' discount');
+    setEl('bd-freq-amt', '−$' + saving.toFixed(0));
+  }
+
+  showRow('bd-condition-row', state.extraDirty);
+
+  const addonBlock = document.getElementById('bd-addons-block');
+  addonBlock.innerHTML = '';
+  addonLines.forEach(a => {
+    const row = document.createElement('div');
+    row.className = 'breakdown-row addon';
+    row.innerHTML = `<span>${a.label}</span><span class="amount">+$${a.price}</span>`;
+    addonBlock.appendChild(row);
+  });
+
+  const hasAnyData = state.bedroom && state.bathroom;
+  showRow('bd-divider', hasAnyData);
+  showRow('bd-total-row', hasAnyData);
+  if (hasAnyData) {
+    setEl('bd-total', '$' + total.toFixed(0));
+    priceBarEl.textContent = '$' + total.toFixed(0);
+  } else {
+    priceBarEl.textContent = '$' + basePrice;
+  }
+}
+
+function setEl(id, text) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = text;
+}
+function showRow(id, visible) {
+  const el = document.getElementById(id);
+  if (el) el.style.display = visible ? '' : 'none';
+}
+
+// ── Form validation ─────────────────────────────────────────────────
+function validate() {
+  let ok = true;
+
+  function check(fieldId, errId, condition) {
+    const field = document.getElementById(fieldId);
+    const err   = document.getElementById(errId);
+    if (!condition) {
+      if (field) field.classList.add('error');
+      if (err)   err.classList.add('visible');
+      ok = false;
+    } else {
+      if (field) field.classList.remove('error');
+      if (err)   err.classList.remove('visible');
+    }
+  }
+
+  check('full-name', 'err-name',    document.getElementById('full-name').value.trim().length > 1);
+  check('phone',     'err-phone',   document.getElementById('phone').value.trim().length > 6);
+  check('email',     'err-email',   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById('email').value.trim()));
+  check('address',   'err-address', document.getElementById('address').value.trim().length > 5);
+
+  const errBed = document.getElementById('err-bedroom');
+  if (!state.bedroom) { errBed.classList.add('visible'); ok = false; }
+  else errBed.classList.remove('visible');
+
+  const errBath = document.getElementById('err-bathroom');
+  if (!state.bathroom) { errBath.classList.add('visible'); ok = false; }
+  else errBath.classList.remove('visible');
+
+  const errType = document.getElementById('err-cleaning-type');
+  if (!state.cleaningType) { errType.classList.add('visible'); ok = false; }
+  else errType.classList.remove('visible');
+
+  // Frequency required unless call-for-quote
+  const freqSection = document.getElementById('frequency-section');
+  if (freqSection.style.display !== 'none') {
+    const errFreq = document.getElementById('err-frequency');
+    if (!state.frequency) { errFreq.classList.add('visible'); ok = false; }
+    else errFreq.classList.remove('visible');
+  }
+
+  check('pref-date', 'err-date', document.getElementById('pref-date').value.length > 0);
+
+  const windowPicked = document.querySelector('input[name="arrival_window"]:checked');
+  const errWindow = document.getElementById('err-window');
+  if (!windowPicked) { errWindow.classList.add('visible'); ok = false; }
+  else errWindow.classList.remove('visible');
+
+  return ok;
+}
+
+// ── Form submission ─────────────────────────────────────────────────
+document.getElementById('booking-form').addEventListener('submit', async function(e) {
+  e.preventDefault();
+  if (!validate()) {
+    const firstErr = document.querySelector('.error, .field-error.visible');
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  const totalEl = document.getElementById('bd-total');
+  const totalHidden = document.createElement('input');
+  totalHidden.type  = 'hidden';
+  totalHidden.name  = 'estimated_total';
+  totalHidden.value = totalEl ? totalEl.textContent : 'N/A';
+  this.appendChild(totalHidden);
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled    = true;
+  btn.textContent = 'Submitting…';
+
+  const formData = new FormData(this);
+  const object   = {};
+  formData.forEach((val, key) => {
+    if (!Reflect.has(object, key)) { object[key] = val; return; }
+    if (!Array.isArray(object[key])) object[key] = [object[key]];
+    object[key].push(val);
+  });
+
+  try {
+    const res  = await fetch('https://api.web2forms.com/submit', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body:    JSON.stringify(object),
+    });
+    const data = await res.json();
+    if (data.success) {
+      document.getElementById('form-container').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('form-container').style.display = 'none';
+        const success = document.getElementById('success-message');
+        success.classList.add('visible');
+        success.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+    } else {
+      alert('There was a problem submitting your request. Please try again or call us directly.');
+      btn.disabled    = false;
+      btn.textContent = '✨ Request My Cleaning →';
+    }
+  } catch (err) {
+    alert('Network error. Please check your connection and try again.');
+    btn.disabled    = false;
+    btn.textContent = '✨ Request My Cleaning →';
+  }
+});
+
+// ── Set min date to today ───────────────────────────────────────────
+(function() {
+  document.getElementById('pref-date').min = new Date().toISOString().split('T')[0];
+})();
+
+recalculate();
+</script>
+</body>
+</html>
